@@ -1,0 +1,15 @@
+/**
+ * Created by alanmars on 15/4/16.
+ */
+var SymbolAnimEffect = {
+    SYMBOL_ANIM_EFFECT_NONE: 0,
+    SYMBOL_ANIM_EFFECT_FLIP: 1,
+    SYMBOL_ANIM_EFFECT_BLINK: 2,
+    SYMBOL_ANIM_EFFECT_SCALE: 3,
+    SYMBOL_ANIM_EFFECT_FLIP_AROUND: 4,
+    SYMBOL_ANIM_EFFECT_IDLE: 5,
+    SYMBOL_ANIM_EFFECT_SPINE: 6,
+    SYMBOL_ANIM_COMMON_CCB_BLINK: 7
+};
+
+module.exports = SymbolAnimEffect;

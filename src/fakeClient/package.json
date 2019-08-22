@@ -1,0 +1,11 @@
+{
+	"name": "WorldTourCasinoFakeClient",
+	"version": "0.0.1",
+	"private": true,
+	"dependencies": {
+		"pomelo-protobuf": "0.4.0",
+		"pomelo-protocol": "0.1.5",
+		"ws": "0.4.25",
+	  	"async": ">=0.0.1"
+	}
+}

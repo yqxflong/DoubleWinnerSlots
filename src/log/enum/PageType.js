@@ -1,0 +1,15 @@
+/**
+ * Created by qinning on 15/11/19.
+ */
+
+var PageType = {
+    PAGE_TYPE_LIKE_US: 1000,
+    PAGE_TYPE_BIND_EMAIL: 1001,
+    PAGE_TYPE_BIND_FB: 1002,
+    PAGE_TYPE_FIRST_PURCHASE: 1003,
+    PAGE_TYPE_SETTING_LIKE_US: 1004,
+    PAGE_TYPE_INVITE_FRIENDS: 1005,
+    PAGE_TYPE_REWARDVIDEOCLICK:1006
+};
+
+module.exports = PageType;

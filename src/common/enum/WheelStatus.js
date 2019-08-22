@@ -1,0 +1,15 @@
+/**
+ * Created by alanmars on 15/12/8.
+ */
+var WheelStatus = {
+    WHEEL_STATUS_INVALID: -1,
+    WHEEL_STATUS_WAIT_TO_ROTATE: 0,
+    WHEEL_STATUS_ACCELERATE_ROTATE: 1,
+    WHEEL_STATUS_STEADY_ROTATE: 2,
+    WHEEL_STATUS_DECELERATE_ROTATE: 3,
+    WHEEL_STATUS_SHOW_RESULT: 4,
+    WHEEL_STATUS_DROP_DOWN: 5,
+    WHEEL_STATUS_BACK_UP: 6
+};
+
+module.exports = WheelStatus;

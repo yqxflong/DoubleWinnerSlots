@@ -1,0 +1,12 @@
+var DailyTaskType = {
+    DAILY_TASK_SPIN: 1,
+    DAILY_TASK_LEVEL_TASK: 2,
+    DAILY_TASK_WIN_FREE_SPIN: 3,
+    DAILY_TASK_MAX_BET_SPIN: 4,
+    DAILY_TASK_BUY_CHIPS: 5,
+    DAILY_TASK_BUY_GEMS: 6,
+    DAILY_TASK_HOURLY_BONUS: 7,
+    DAILY_TASK_WIN_CHIPS: 8
+};
+
+module.exports = DailyTaskType;

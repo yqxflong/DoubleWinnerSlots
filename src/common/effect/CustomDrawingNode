@@ -1,0 +1,169 @@
+/**
+ * Created by JianWang on 7/18/16.
+ */
+ var GLNode = cc.GLNode || cc.Node.extend({
+        ctor:function(){
+            this._super();
+            this.init();
+        },
+        init:function(){
+            this._renderCmd._needDraw = true;
+            this._renderCmd.rendering =  function(ctx){
+                cc.kmGLMatrixMode(cc.KM_GL_MODELVIEW);
+                cc.kmGLPushMatrix();
+                cc.kmGLLoadMatrix(this._stackMatrix);
+
+                this._node.draw(ctx);
+
+                cc.kmGLPopMatrix();
+            };
+        },
+        draw:function(ctx){
+            this._super(ctx);
+        }
+ });
+var CustomDrawingNode = GLNode.extend({
+
+    _className:"CustomDrawingNode",
+    _indexbufferData:null,
+    _vertexBufferData:null,
+    _indexbuffer:null,
+    _verticesBuffer:null,
+
+    _capacityVertex:2000,
+    _capacityIndex:6000,
+    _totalIndexCount:0,
+    _indexCountToDaw:0,
+
+    _verticesElementDirty:true,
+    _indexDirty:true,
+    _texture:null,
+    _blendFunc: null,
+    //POS:2,COLOR:4,UV:2
+    ELEMENT_PER_VERTIX:8,
+
+    ctor:function (capacityVertex,capacityIndex) {
+
+        this._super();
+        this._capacityVertex = capacityVertex || this._capacityVertex;
+        this._capacityIndex = capacityIndex || this._capacityIndex;
+
+        this._initBufferData();
+        this._setupVBO();
+        this.updateRenderData();
+
+        this._blendFunc = new cc.BlendFunc(cc.SRC_ALPHA, cc.ONE_MINUS_SRC_ALPHA);
+    },
+
+    updateRenderData:function()
+    {
+
+    },
+    _initBufferData:function()
+    {
+        this._vertexBufferData = new Float32Array(this._capacityVertex * this.ELEMENT_PER_VERTIX);
+        this._indexbufferData =  new Uint16Array(this._capacityIndex);
+        this._totalIndexCount = this._capacity * 3;
+    },
+
+    _setupVBO: function () {
+      //  var gl = cc._renderContext;
+        this._indexbuffer = gl.createBuffer();
+        this._verticesBuffer = gl.createBuffer();
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, this._verticesBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, this._vertexBufferData, gl.DYNAMIC_DRAW);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this._indexbuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, this._vertexBufferData, gl.DYNAMIC_DRAW);
+    },
+
+    updateRenderParameter:function( ) {
+        if(this._texture) {
+            gl.bindTexture(gl.TEXTURE_2D, this._texture.getName());
+        }
+    },
+    draw: function (ctx) {
+
+        var _t = this;
+
+        if ( _t._indexCountToDaw <= 0 || !this.visible || !this._shaderProgram)
+            return;
+        // active and bind texture
+        this._shaderProgram.use();
+        this._shaderProgram.setUniformsForBuiltins();
+
+        this.updateRenderParameter();
+        
+        gl.blendFunc(_t._blendFunc.src, _t._blendFunc.dst);
+        //
+        // Using VBO without VAO
+        //
+        //vertices
+        gl.enableVertexAttribArray(cc.VERTEX_ATTRIB_POSITION);
+        gl.enableVertexAttribArray(cc.VERTEX_ATTRIB_COLOR);
+        gl.enableVertexAttribArray(cc.VERTEX_ATTRIB_TEX_COORDS);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, _t._verticesBuffer);
+        if (_t._verticesElementDirty){
+            gl.bufferData(gl.ARRAY_BUFFER, _t._vertexBufferData, gl.DYNAMIC_DRAW);
+            _t._verticesElementDirty = false;
+        }
+
+        gl.vertexAttribPointer(cc.VERTEX_ATTRIB_POSITION, 2, gl.FLOAT, false, 32, 0);               // vertices
+        gl.vertexAttribPointer(cc.VERTEX_ATTRIB_COLOR, 4, gl.FLOAT, false, 32, 8);          // colors
+        gl.vertexAttribPointer(cc.VERTEX_ATTRIB_TEX_COORDS, 2, gl.FLOAT, false, 32, 24);            // tex coords
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, _t._indexbuffer);
+
+
+        if(_t._indexDirty)
+        {
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, _t._indexbufferData, gl.DYNAMIC_DRAW);
+            _t._indexDirty = false;
+        }
+        if(cc.sys.isNative)
+            gl.drawElements(gl.TRIANGLES, this._indexCountToDaw, gl.UNSIGNED_SHORT, null);
+        else
+            gl.drawElements(gl.TRIANGLES, this._indexCountToDaw, gl.UNSIGNED_SHORT, 0);
+
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null);
+        gl.bindBuffer(gl.ARRAY_BUFFER, null);
+        cc.g_NumberOfDraws++;
+    },
+
+    setVertexPosition:function (index, vPos) {
+        var posOffset = index * this.ELEMENT_PER_VERTIX;
+        this._vertexBufferData[posOffset] = vPos.x;
+        this._vertexBufferData[posOffset + 1] = vPos.y;
+    },
+
+    setVertexColor:function (index, vColor) {
+
+        var colorOffset = index * this.ELEMENT_PER_VERTIX + 2;
+        this._vertexBufferData[colorOffset] = vColor.r/255;
+        this._vertexBufferData[colorOffset + 1] = vColor.g / 255;
+        this._vertexBufferData[colorOffset + 2] = vColor.b / 255;
+        this._vertexBufferData[colorOffset + 3] = vColor.a / 255;
+    },
+
+    setVertexUV:function (index, vUV) {
+        var uvOffset = index * this.ELEMENT_PER_VERTIX + 6;
+        this._vertexBufferData[uvOffset] = vUV.x;
+        this._vertexBufferData[uvOffset + 1] = vUV.y;
+    },
+
+    cleanup: function () {
+          if (this._verticesBuffer){
+              gl.deleteBuffer(this._verticesBuffer);
+              this._verticesBuffer = null;
+          }
+          if(this._indexbuffer)
+          {
+             gl.deleteBuffer(this._indexbuffer);
+             this._indexbuffer = null;
+          }
+    }
+});
+
+module.exports = CustomDrawingNode;
